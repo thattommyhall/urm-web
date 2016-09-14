@@ -2,14 +2,34 @@
     (:require [reagent.core :as reagent :refer [atom]]
               [reagent.session :as session]
               [secretary.core :as secretary :include-macros true]
-              [accountant.core :as accountant]))
+              [accountant.core :as accountant]
+              [urm-web.urm :as urm]))
 
 ;; -------------------------
 ;; Views
 
+
+(defn draw-sim [state]
+  [:div
+   [:div [:h2 "Registers"]]
+   [:table
+    (for [[register-number register-content] (:registers state)]
+      [:tr
+       [:td register-number]
+       [:td  register-content]])
+    ]
+   [:div [:h2 "Program"]]
+   [:ul
+    (for [line (range (count (:program state)))]
+      (let [style (if (= (:position state) line)
+                    {:style {:background "#60B5CC"}}
+                    {})]
+        [:li style
+         (str (get (:program state) line))]))
+    ]])
+
 (defn home-page []
-  [:div [:h2 "Welcome to urm-web"]
-   [:div [:a {:href "/about"} "go to about page"]]])
+  (draw-sim @urm/current-state))
 
 (defn about-page []
   [:div [:h2 "About urm-web"]
