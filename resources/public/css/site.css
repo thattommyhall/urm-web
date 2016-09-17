@@ -42,3 +42,13 @@ td {
     padding: 0.5rem 1.5rem;
     text-align: left;
 }
+
+ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin-top: 5px;
+}
+
+li {
+    font-family: DejaVu Sans Mono;
+}
