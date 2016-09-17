@@ -69,12 +69,15 @@
   (let [next-statement (nth program position)]
     (apply-statement next-statement state)))
 
-(defn zero [register]
-  [(deb register 0 1)
-   (end)])
-
 (defn divides? [n div]
   (== 0 (rem n div)))
+
+(defn expt [x y]
+  (reduce * (repeat y x)))
+
+(defn code-pair [x y]
+  (* (expt 2 x)
+     (+ (* 2 y) 1)))
 
 (defn factors-of-2
   ([n] (factors-of-2 n 0))
@@ -83,13 +86,6 @@
      (recur (/ n 2)
             (+ 1 so-far))
      so-far)))
-
-(defn expt [x y]
-  (.pow js/Math x y))
-
-(defn code-pair [x y]
-  (* (expt 2 x)
-     (+ (* 2 y) 1)))
 
 (defn decode-pair [n]
   (let [x (factors-of-2 n)
@@ -113,7 +109,7 @@
   (case instruction
     :inc (code-pair (* 2 register) jump-to)
     :deb (code-pair (+ (* 2 register) 1)
-               (code-pair jump-to branch-on-zero))
+                    (code-pair jump-to branch-on-zero))
     :end 0))
 
 (defn decode-instruction [code]
@@ -134,7 +130,7 @@
   (map decode-instruction (decode-list code)))
 
 (def program 1)
-;; (def registers 2)
+(def register-content 2)
 (def position 3)
 (def current-instruction 4)
 (def current-instruction-type 5)
@@ -148,17 +144,17 @@
    (pop t current-instruction 2 14)
    (deb position 1 3)
    (pop current-instruction current-instruction-type 4 14)
-   (pop registers current-register 5 5)
+   (pop register-content current-register 5 5)
    (deb current-instruction-type 6 8)
    (deb current-instruction-type 7 10)
    (push current-register s 4)
    (inc current-register 9)
    (copy current-instruction position 11)
    (pop current-instruction position 12 12)
-   (push current-register registers 13)
+   (push current-register register-content 13)
    (deb current-register 11 9)
    (pop s current-register 11 0)
-   (pop registers 0 15 15)
+   (pop register-content 0 15 15)
    (end)])
 
 (def add [(deb 2 1 2)
@@ -167,12 +163,15 @@
           (inc 0 2)
           (end)])
 
+
 (def args {0 0
-           1 7
-           2 3})
+           1 (code-program add)
+           2 (code-list [0 0 0 0])})
 
 (def current-state (atom {:program add
                           :position 0
-                          :registers args}))
+                          :registers {0 0
+                                      1 7
+                                      2 8}}))
 
 (js/setInterval #(swap! current-state next-state) 1000)

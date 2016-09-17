@@ -9,6 +9,8 @@
 ;; Views
 
 
+
+
 (defn draw-sim [state]
   [:div
    [:div [:h2 "Registers"]]
@@ -25,7 +27,7 @@
                     {:style {:background "#60B5CC"}}
                     {})]
         [:li style
-         (str (get (:program state) line))]))
+         (str line ": " (pr-str (get (:program state) line)))]))
     ]])
 
 (defn home-page []
